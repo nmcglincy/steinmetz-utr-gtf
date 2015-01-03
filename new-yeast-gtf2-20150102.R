@@ -6,6 +6,6 @@
 # ONLY INCLUDE THE YPD COUNTS
 # 
 # 
-grep -w "Covering one intact ORF" S2_tcd_mTIFAnno.txt | awk -f reformater.awk > mtifs.txt
-grep -w "Intergenic transcripts" S2_tcd_mTIFAnno.txt | awk -f reformater-igt-tifs.awk >> mtifs.txt
-awk -f reorder-loc.awk mtifs.txt > mtifs2.txt
+system("grep -w 'Covering one intact ORF' S2_tcd_mTIFAnno.txt | awk -f reformater.awk > mtifs.txt")
+system("grep -w 'Intergenic transcripts' S2_tcd_mTIFAnno.txt | awk -f reformater-igt-tifs.awk >> mtifs.txt")
+system("awk -f reorder-loc.awk mtifs.txt > mtifs2.txt")
