@@ -37,15 +37,32 @@ igt.mtifs = subset(mtifs, class != "Covering_one_intact_ORF")
 
 # STEP 1. CONVERT DATAFRAME INTO A GR RANGES OBJECT
 library("GenomicRanges")
-?GenomicRanges
+# ?GenomicRanges
 igt.mtifs.gr = makeGRangesFromDataFrame(igt.mtifs,
                                         keep.extra.columns = TRUE,
-                                        ignore.strande = FALSE,
+                                        ignore.strand = FALSE,
                                         seqnames.field = c("chr"),
                                         start.field = c("start"),
                                         end.field = c("end"),
-                                        strand.fiels = c("strand"))
+                                        strand.field = c("strand"))
+# igt.mtifs.gr
 
+# STEP 2. SUBSUME OVERLAPPING RANGES.
+?reduce
+# 
+# NOT SURE ABOUT THE with.revmap OR min.gapwidth OPTIONS.
+# WHAT IS A GOOD BIOLOGICALLY RELEVANT VALUE OF MIN.GAPWIDTH
+igt.mtifs.gr.rd = reduce(igt.mtifs.gr,
+                         drop.empty.ranges = FALSE,
+                         min.gapwidth = 1,
+                         with.revmap = TRUE)
+igt.mtifs.gr.rd
+# I THINK IT WOULD BE COOL TO LOOK AT THE LAST TWO OBJECTS IN IGV AS A BIT OF A SANITY CHECK.
+# 
+# ALSO, IF I COULD LOOK AT THE DISTRIBUTION OF INTER-RANGE DISTANCES, THIS WOULD GUIDE MY CHOICE
+# OF min.gapwidth.
+
+# TODO - GIVE NAMES TO THE ASSEMBLIES RESULTING FROM REDUCE.
 
 
 
