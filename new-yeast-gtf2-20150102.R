@@ -57,15 +57,80 @@ igt.mtifs.gr.rd = reduce(igt.mtifs.gr,
                          min.gapwidth = 1,
                          with.revmap = TRUE)
 igt.mtifs.gr.rd
-igt.mtifs.gr[52]
+# igt.mtifs.gr[52]
 # I THINK IT WOULD BE COOL TO LOOK AT THE LAST TWO OBJECTS IN IGV AS A BIT OF A SANITY CHECK.
 # 
 # ALSO, IF I COULD LOOK AT THE DISTRIBUTION OF INTER-RANGE DISTANCES, THIS WOULD GUIDE MY CHOICE
 # OF min.gapwidth.
 mtif.gaps = gaps(igt.mtifs.gr.rd)
 mtif.gaps
-?GRanges
-?width
+mtif.gaps.wth = width(mtif.gaps)
+hist(mtif.gaps.wth)
+# TOO BROAD A RANGE TO BE INFORMATIVE ABOUT THE SMALLEST GAPS
+mtif.gaps.wth.l100 = mtif.gaps.wth[which(mtif.gaps.wth <= 100)]
+hist(mtif.gaps.wth.l100)
+plot(mtif.gaps.wth.l100)
+# I THINK I NEED GGPLOT2 FOR THIS
+library("ggplot2")
+mtif.gaps.wth.l100.df = as.data.frame(mtif.gaps.wth.l100)
+# mtif.gaps.wth.l100.df
+ggplot(mtif.gaps.wth.l100.df, aes(x = mtif.gaps.wth.l100)) +
+  geom_dotplot(binwidth = 1, stackdir = "center", pch = 21) +
+  ylab(NULL) +
+  xlab("Inter mTIF-assembly gap") +
+  scale_x_continuous(breaks = seq(0, 100, by = 10)) +
+  theme(panel.border = element_rect(fill = NA, colour = "black"),
+        axis.title.x = element_text(vjust = 0, size = 16),
+        axis.title.y = element_text(vjust = 1, size = 14),
+        axis.text.x = element_text(size=14, vjust = 0.5),
+        axis.text.y  = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.title = element_text(size = 16),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 14),
+        strip.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12))
+ggsave("mtif-gaps-lt100.png", dpi = 400)
+# SHOULD PLOT THE SAME FOR THE WHOLE VECTOR FOR COMPARISON
+mtif.gaps.wth.df = as.data.frame(mtif.gaps.wth)
+ggplot(mtif.gaps.wth.df, aes(x = log2(mtif.gaps.wth))) +
+  geom_histogram() +
+  geom_vline(xintercept = log2(100), colour = "red") +
+  xlab("Log2 (Inter mTIF-assembly gap)") +
+  ylab("Count") +
+  theme(panel.border = element_rect(fill = NA, colour = "black"),
+        axis.title.x = element_text(vjust = 0, size = 16),
+        axis.title.y = element_text(vjust = 1, size = 16),
+        axis.text.x = element_text(size=14, vjust = 0.5),
+        axis.text.y = element_text(size=14, vjust = 0.5),
+        plot.title = element_text(size = 16),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 14),
+        strip.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12))
+ggsave("mtif-gaps.png", dpi = 400)
+# 
+# THE SMALLEST GAPS ARE
+head(sort(mtif.gaps.wth), n = 10)
+#  [1]  1  5  5  7  9  9 10 16 18 19
+# WHICH GAP
+which.min(mtif.gaps.wth)
+mtif.gaps[157]
+# 
+# EFFECT OF VARYING MIN.GAPWIDTH
+length(reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 0, with.revmap = TRUE))
+# [1] 2998
+length(reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 1, with.revmap = TRUE))
+# [1] 2993
+# SO THERE ARE 5 MTIF-ASSEMBLIES THAT ARE DIRECTLY ADJACENT TO EACH OTHER
+gap0 = reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 0, with.revmap = TRUE)
+gap0
+gap1 = reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 1, with.revmap = TRUE)
+gap1
+setdiff(gap0, gap1)
+# DON'T UNDERSTAND WHY THIS DOESN'T WORK
+
+
 # TODO - GIVE NAMES TO THE ASSEMBLIES RESULTING FROM REDUCE.
 
 
