@@ -57,11 +57,15 @@ igt.mtifs.gr.rd = reduce(igt.mtifs.gr,
                          min.gapwidth = 1,
                          with.revmap = TRUE)
 igt.mtifs.gr.rd
+igt.mtifs.gr[52]
 # I THINK IT WOULD BE COOL TO LOOK AT THE LAST TWO OBJECTS IN IGV AS A BIT OF A SANITY CHECK.
 # 
 # ALSO, IF I COULD LOOK AT THE DISTRIBUTION OF INTER-RANGE DISTANCES, THIS WOULD GUIDE MY CHOICE
 # OF min.gapwidth.
-
+mtif.gaps = gaps(igt.mtifs.gr.rd)
+mtif.gaps
+?GRanges
+?width
 # TODO - GIVE NAMES TO THE ASSEMBLIES RESULTING FROM REDUCE.
 
 
