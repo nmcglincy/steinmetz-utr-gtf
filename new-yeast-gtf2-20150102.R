@@ -169,7 +169,7 @@ igt.mtif.asm = data.frame(igt.mtifs.gr.rd.df[,1:5],
                                             1:nrow(igt.mtifs.gr.rd.df)),
                           ypd.counts = unlist(lapply(igt.mtifs.gr.rd.df$revmap, 
                                                      function(x) {sum(igt.mtifs.gr[x]$ypd.counts)})))
-igt.mtif.asm$seqnames = sprintf("chr%d", igt.mtif.asm$seqnames)
+# igt.mtif.asm$seqnames = sprintf("chr%d", igt.mtif.asm$seqnames)
 # head(igt.mtif.asm)
 # tail(igt.mtif.asm)
 #  - GRAPH MIGHT BE NICE - WIDTH AND NO.READS DISTRIBUTION
@@ -206,15 +206,17 @@ ggplot(igt.mtif.asm, aes(x = log10(ypd.counts))) +
         strip.text.x = element_text(size = 12),
         strip.text.y = element_text(size = 12))
 ggsave("mtif-asm-ypdReads.png", dpi = 400)
-
+# 
 # WRTIE OUT FOR POSTERITY
-write.csv(igt.mtif.asm,
-          file = "igt-mtifs-asm.csv",
+write.table(igt.mtif.asm,
+          file = "igt-mtifs-asm.txt",
+          sep = "\t",
           row.names = FALSE,
           quote = FALSE)
-
 # 
-
-
-
+# COULD DO ANOTHER VERSION WITH NICK'S GTF WITH IGTS ATTACHED
+# 
+# REFORMATING INTO GTF FORMAT AND FUSING TO NICK'S GTF
+system("awk -f anno-to-gtf2.awk igt-mtifs-asm-noHeader.txt > igt_mtif_asm.gtf")
+system("cat sac_cer_yassour_utr.gtf igt_mtif_asm.gtf > sc_yassour_utr_steinmetz_igt.gtf")
 
