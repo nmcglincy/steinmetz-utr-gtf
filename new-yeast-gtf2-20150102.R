@@ -53,7 +53,7 @@ igt.mtifs.gr = makeGRangesFromDataFrame(igt.mtifs,
 # WHAT IS A GOOD BIOLOGICALLY RELEVANT VALUE OF MIN.GAPWIDTH
 igt.mtifs.gr.rd = reduce(igt.mtifs.gr,
                          drop.empty.ranges = FALSE,
-                         min.gapwidth = 1,
+                         min.gapwidth = 0,
                          with.revmap = TRUE)
 igt.mtifs.gr.rd
 # igt.mtifs.gr[52]
@@ -62,13 +62,13 @@ igt.mtifs.gr.rd
 # ALSO, IF I COULD LOOK AT THE DISTRIBUTION OF INTER-RANGE DISTANCES, THIS WOULD GUIDE MY CHOICE
 # OF min.gapwidth.
 mtif.gaps = gaps(igt.mtifs.gr.rd)
-mtif.gaps
+# mtif.gaps
 mtif.gaps.wth = width(mtif.gaps)
-hist(mtif.gaps.wth)
+# hist(mtif.gaps.wth)
 # TOO BROAD A RANGE TO BE INFORMATIVE ABOUT THE SMALLEST GAPS
 mtif.gaps.wth.l100 = mtif.gaps.wth[which(mtif.gaps.wth <= 100)]
-hist(mtif.gaps.wth.l100)
-plot(mtif.gaps.wth.l100)
+# hist(mtif.gaps.wth.l100)
+# plot(mtif.gaps.wth.l100)
 # I THINK I NEED GGPLOT2 FOR THIS
 library("ggplot2")
 mtif.gaps.wth.l100.df = as.data.frame(mtif.gaps.wth.l100)
@@ -122,55 +122,46 @@ length(reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 0, with.re
 length(reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 1, with.revmap = TRUE))
 # [1] 2993
 # SO THERE ARE 5 MTIF-ASSEMBLIES THAT ARE DIRECTLY ADJACENT TO EACH OTHER
+# 
+# DO THE SET OPERATION ON THE DATAFRAMES USING DPLYR
 gap0 = reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 0, with.revmap = FALSE)
-gaps(gap0)
+# gap0
 gap1 = reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 1, with.revmap = FALSE)
-gaps(gap1)
-GenomicRanges::setdiff(gap0, gap1, ignore.strand = FALSE)
-GenomicRanges::setdiff(gap1, gap0, ignore.strand = FALSE)
-intersect(gap1, gap0)
-union(gap1, gap0)
-foo
-# DON'T UNDERSTAND WHY THIS DOESN'T WORK
-union(c(1, 2, 3), c(3, 4, 5))
-intersect(c(1, 2, 3), c(3, 4, 5))
-setdiff(c(1, 2, 3), c(3, 4, 5))
-
+# gap1
 gap0.df = as.data.frame(gap0)
-gap0.df
+# gap0.df
 gap1.df = as.data.frame(gap1)
-dim(gap0.df)
-class(gap1.df)
-
-a1 <- data.frame(a = 1:5, b=letters[1:5])
-a2 <- data.frame(a = 1:3, b=letters[1:3])
-a1
-a2
-a1NotIna2 <- sqldf('SELECT * FROM a1 EXCEPT SELECT * FROM a2')
-a1NotIna2
-And the rows which are in both data frames:
-a1Ina2 <- sqldf('SELECT * FROM a1 INTERSECT SELECT * FROM a2')
-a1Ina2
-
-sqldf('SELECT * FROM gap0.df EXCEPT SELECT * FROM gap1.df')
-sqldf('SELECT * FROM gap1.df EXCEPT SELECT * FROM gap0.df')
-
-library(compare)
-foo = compare(gap0.df, gap1.df)
-foo$tM
-?compare
-a1 <- data.frame(a = 1:5, b = letters[1:5])
-a2 <- data.frame(a = 1:3, b = letters[1:3])
-comparison <- compare(a1,a2,allowAll=TRUE)
-comparison$tM
-str(comparison)
+# gap1.df
 library(dplyr)
+# 
+# WHAT IS IN GAP0.DF THAT IS NOT IN GAP1.DF
 dplyr::setdiff(gap0.df,gap1.df)
+#   seqnames  start    end width strand
+#   1        11 259577 259705   129      +
+#   2        11 259706 261084  1379      +
+#   3        16 911828 912080   253      +
+#   4        16 912081 912564   484      +
+#   5         2 538924 539552   629      -
+#   6         2 539553 540666  1114      -
+#   7         5 101296 101504   209      +
+#   8         5 101505 101912   408      +
+#   9         7 511009 512949  1941      -
+#   10        7 512950 514367  1418      -
+# 
+# WHAT IS IN GAP1.DF THAT IS NOT IN GAP0.DF
 dplyr::setdiff(gap1.df,gap0.df)
+#   seqnames  start    end width strand
+#   1       11 259577 261084  1508      +
+#   2       16 911828 912564   737      +
+#   3        2 538924 540666  1743      -
+#   4        5 101296 101912   617      +
+#   5        7 511009 514367  3359      -
+# 
+# AFTER THAT, I THINK IT'S THE BEST THING TO TO STIPULATE min.gapwidth = 0
+
 # TODO - GIVE NAMES TO THE ASSEMBLIES RESULTING FROM REDUCE.
+?print
 
 
-
-
-
+?row.names
 
