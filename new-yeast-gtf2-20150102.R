@@ -46,9 +46,8 @@ igt.mtifs.gr = makeGRangesFromDataFrame(igt.mtifs,
                                         end.field = c("end"),
                                         strand.field = c("strand"))
 # igt.mtifs.gr
-
 # STEP 2. SUBSUME OVERLAPPING RANGES.
-?reduce
+# ?reduce
 # 
 # NOT SURE ABOUT THE with.revmap OR min.gapwidth OPTIONS.
 # WHAT IS A GOOD BIOLOGICALLY RELEVANT VALUE OF MIN.GAPWIDTH
@@ -123,14 +122,51 @@ length(reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 0, with.re
 length(reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 1, with.revmap = TRUE))
 # [1] 2993
 # SO THERE ARE 5 MTIF-ASSEMBLIES THAT ARE DIRECTLY ADJACENT TO EACH OTHER
-gap0 = reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 0, with.revmap = TRUE)
-gap0
-gap1 = reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 1, with.revmap = TRUE)
-gap1
-setdiff(gap0, gap1)
+gap0 = reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 0, with.revmap = FALSE)
+gaps(gap0)
+gap1 = reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 1, with.revmap = FALSE)
+gaps(gap1)
+GenomicRanges::setdiff(gap0, gap1, ignore.strand = FALSE)
+GenomicRanges::setdiff(gap1, gap0, ignore.strand = FALSE)
+intersect(gap1, gap0)
+union(gap1, gap0)
+foo
 # DON'T UNDERSTAND WHY THIS DOESN'T WORK
+union(c(1, 2, 3), c(3, 4, 5))
+intersect(c(1, 2, 3), c(3, 4, 5))
+setdiff(c(1, 2, 3), c(3, 4, 5))
 
+gap0.df = as.data.frame(gap0)
+gap0.df
+gap1.df = as.data.frame(gap1)
+dim(gap0.df)
+class(gap1.df)
 
+a1 <- data.frame(a = 1:5, b=letters[1:5])
+a2 <- data.frame(a = 1:3, b=letters[1:3])
+a1
+a2
+a1NotIna2 <- sqldf('SELECT * FROM a1 EXCEPT SELECT * FROM a2')
+a1NotIna2
+And the rows which are in both data frames:
+a1Ina2 <- sqldf('SELECT * FROM a1 INTERSECT SELECT * FROM a2')
+a1Ina2
+
+sqldf('SELECT * FROM gap0.df EXCEPT SELECT * FROM gap1.df')
+sqldf('SELECT * FROM gap1.df EXCEPT SELECT * FROM gap0.df')
+
+library(compare)
+foo = compare(gap0.df, gap1.df)
+foo$tM
+?compare
+a1 <- data.frame(a = 1:5, b = letters[1:5])
+a2 <- data.frame(a = 1:3, b = letters[1:3])
+comparison <- compare(a1,a2,allowAll=TRUE)
+comparison$tM
+str(comparison)
+library(dplyr)
+dplyr::setdiff(gap0.df,gap1.df)
+dplyr::setdiff(gap1.df,gap0.df)
 # TODO - GIVE NAMES TO THE ASSEMBLIES RESULTING FROM REDUCE.
 
 
