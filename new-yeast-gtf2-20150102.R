@@ -6,14 +6,14 @@
 # ONLY INCLUDE THE YPD COUNTS
 #
 # ONLY REQUIRED THE FIRST TIME YOU RUN THE SCRIPT
-system("grep -w 'Covering one intact ORF' S2_tcd_mTIFAnno.txt | awk -f reformater.awk > mtifs.txt")
+system("grep -w 'Covering one intact ORF' S2_tcd_mTIFAnno.txt | grep -wv 'NA' | awk -f reformater.awk > mtifs.txt")
 system("grep -w 'Intergenic transcripts' S2_tcd_mTIFAnno.txt | awk -f reformater-igt-tifs.awk >> mtifs.txt")
 system("awk -f reorder-loc.awk mtifs.txt > mtifs2.txt")
 #
 # READ IN THE RESULTING FILE
 mtifs = read.delim("mtifs2.txt",
                    header = FALSE)
-# head(mtifs)
+head(mtifs)
 colnames(mtifs) = c("chr", "strand", "start", "end", "ypd.counts", "class", "gene.id")
 # QUICK SANITY CHECK
 # with(mtifs, hist(log10(ypd.counts)))
@@ -24,9 +24,9 @@ colnames(mtifs) = c("chr", "strand", "start", "end", "ypd.counts", "class", "gen
 coio.mtifs = subset(mtifs, class == "Covering_one_intact_ORF")
 igt.mtifs = subset(mtifs, class != "Covering_one_intact_ORF")
  
-# head(coio.mtifs)
+head(coio.mtifs)
 # summary(coio.mtifs)
-# head(igt.mtifs)
+head(igt.mtifs)
 # summary(igt.mtifs)
 # EVERYTHING LOOKS AS I EXPECTED
 
@@ -61,81 +61,81 @@ igt.mtifs.gr.rd = reduce(igt.mtifs.gr,
 # 
 # ALSO, IF I COULD LOOK AT THE DISTRIBUTION OF INTER-RANGE DISTANCES, THIS WOULD GUIDE MY CHOICE
 # OF min.gapwidth.
-# mtif.gaps = gaps(igt.mtifs.gr.rd)
+mtif.gaps = gaps(igt.mtifs.gr.rd)
 # mtif.gaps
-# mtif.gaps.wth = width(mtif.gaps)
+mtif.gaps.wth = width(mtif.gaps)
 # hist(mtif.gaps.wth)
 # TOO BROAD A RANGE TO BE INFORMATIVE ABOUT THE SMALLEST GAPS
-# mtif.gaps.wth.l100 = mtif.gaps.wth[which(mtif.gaps.wth <= 100)]
+mtif.gaps.wth.l100 = mtif.gaps.wth[which(mtif.gaps.wth <= 100)]
 # hist(mtif.gaps.wth.l100)
 # plot(mtif.gaps.wth.l100)
 # I THINK I NEED GGPLOT2 FOR THIS
-# library("ggplot2")
-# mtif.gaps.wth.l100.df = as.data.frame(mtif.gaps.wth.l100)
-# mtif.gaps.wth.l100.df
-# ggplot(mtif.gaps.wth.l100.df, aes(x = mtif.gaps.wth.l100)) +
-#   geom_dotplot(binwidth = 1, stackdir = "center", pch = 21) +
-#   ylab(NULL) +
-#   xlab("Inter mTIF-assembly gap") +
-#   scale_x_continuous(breaks = seq(0, 100, by = 10)) +
-#   theme(panel.border = element_rect(fill = NA, colour = "black"),
-#         axis.title.x = element_text(vjust = 0, size = 16),
-#         axis.title.y = element_text(vjust = 1, size = 14),
-#         axis.text.x = element_text(size=14, vjust = 0.5),
-#         axis.text.y  = element_blank(),
-#         axis.ticks.y = element_blank(),
-#         plot.title = element_text(size = 16),
-#         legend.text = element_text(size = 12),
-#         legend.title = element_text(size = 14),
-#         strip.text.x = element_text(size = 12),
-#         strip.text.y = element_text(size = 12))
-# ggsave("mtif-gaps-lt100.png", dpi = 400)
+library("ggplot2")
+mtif.gaps.wth.l100.df = as.data.frame(mtif.gaps.wth.l100)
+mtif.gaps.wth.l100.df
+ggplot(mtif.gaps.wth.l100.df, aes(x = mtif.gaps.wth.l100)) +
+  geom_dotplot(binwidth = 1, stackdir = "center", pch = 21) +
+  ylab(NULL) +
+  xlab("Inter mTIF-assembly gap") +
+  scale_x_continuous(breaks = seq(0, 100, by = 10)) +
+  theme(panel.border = element_rect(fill = NA, colour = "black"),
+        axis.title.x = element_text(vjust = 0, size = 16),
+        axis.title.y = element_text(vjust = 1, size = 14),
+        axis.text.x = element_text(size=14, vjust = 0.5),
+        axis.text.y  = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.title = element_text(size = 16),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 14),
+        strip.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12))
+ggsave("mtif-gaps-lt100.png", dpi = 400)
 # SHOULD PLOT THE SAME FOR THE WHOLE VECTOR FOR COMPARISON
-# mtif.gaps.wth.df = as.data.frame(mtif.gaps.wth)
-# ggplot(mtif.gaps.wth.df, aes(x = log2(mtif.gaps.wth))) +
-#   geom_histogram() +
-#   geom_vline(xintercept = log2(100), colour = "red") +
-#   xlab("Log2 (Inter mTIF-assembly gap)") +
-#   ylab("Count") +
-#   theme(panel.border = element_rect(fill = NA, colour = "black"),
-#         axis.title.x = element_text(vjust = 0, size = 16),
-#         axis.title.y = element_text(vjust = 1, size = 16),
-#         axis.text.x = element_text(size=14, vjust = 0.5),
-#         axis.text.y = element_text(size=14, vjust = 0.5),
-#         plot.title = element_text(size = 16),
-#         legend.text = element_text(size = 12),
-#         legend.title = element_text(size = 14),
-#         strip.text.x = element_text(size = 12),
-#         strip.text.y = element_text(size = 12))
-# ggsave("mtif-gaps.png", dpi = 400)
+mtif.gaps.wth.df = as.data.frame(mtif.gaps.wth)
+ggplot(mtif.gaps.wth.df, aes(x = log2(mtif.gaps.wth))) +
+  geom_histogram() +
+  geom_vline(xintercept = log2(100), colour = "red") +
+  xlab("Log2 (Inter mTIF-assembly gap)") +
+  ylab("Count") +
+  theme(panel.border = element_rect(fill = NA, colour = "black"),
+        axis.title.x = element_text(vjust = 0, size = 16),
+        axis.title.y = element_text(vjust = 1, size = 16),
+        axis.text.x = element_text(size=14, vjust = 0.5),
+        axis.text.y = element_text(size=14, vjust = 0.5),
+        plot.title = element_text(size = 16),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 14),
+        strip.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12))
+ggsave("mtif-gaps.png", dpi = 400)
 # 
 # THE SMALLEST GAPS ARE
-# head(sort(mtif.gaps.wth), n = 10)
+head(sort(mtif.gaps.wth), n = 10)
 #  [1]  1  5  5  7  9  9 10 16 18 19
 # WHICH GAP
 # which.min(mtif.gaps.wth)
 # mtif.gaps[157]
 # 
 # EFFECT OF VARYING MIN.GAPWIDTH
-# length(reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 0, with.revmap = TRUE))
+length(reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 0, with.revmap = TRUE))
 # [1] 2998
-# length(reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 1, with.revmap = TRUE))
+length(reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 1, with.revmap = TRUE))
 # [1] 2993
 # SO THERE ARE 5 MTIF-ASSEMBLIES THAT ARE DIRECTLY ADJACENT TO EACH OTHER
 # 
 # DO THE SET OPERATION ON THE DATAFRAMES USING DPLYR
-# gap0 = reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 0, with.revmap = FALSE)
-# gap0
-# gap1 = reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 1, with.revmap = FALSE)
-# gap1
-# gap0.df = as.data.frame(gap0)
-# gap0.df
-# gap1.df = as.data.frame(gap1)
-# gap1.df
-# library(dplyr)
+gap0 = reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 0, with.revmap = FALSE)
+gap0
+gap1 = reduce(igt.mtifs.gr, drop.empty.ranges = FALSE, min.gapwidth = 1, with.revmap = FALSE)
+gap1
+gap0.df = as.data.frame(gap0)
+gap0.df
+gap1.df = as.data.frame(gap1)
+gap1.df
+library(dplyr)
 # 
 # WHAT IS IN GAP0.DF THAT IS NOT IN GAP1.DF
-# dplyr::setdiff(gap0.df,gap1.df)
+dplyr::setdiff(gap0.df,gap1.df)
 #   seqnames  start    end width strand
 #   1        11 259577 259705   129      +
 #   2        11 259706 261084  1379      +
@@ -149,7 +149,7 @@ igt.mtifs.gr.rd = reduce(igt.mtifs.gr,
 #   10        7 512950 514367  1418      -
 # 
 # WHAT IS IN GAP1.DF THAT IS NOT IN GAP0.DF
-# dplyr::setdiff(gap1.df,gap0.df)
+dplyr::setdiff(gap1.df,gap0.df)
 #   seqnames  start    end width strand
 #   1       11 259577 261084  1508      +
 #   2       16 911828 912564   737      +
@@ -233,10 +233,10 @@ coio.mtif.summ
 with(coio.mtif.summ, plot(log10(no.mTifs),log10(sum.ypd.counts)))
 
 # DISTRIBUTION OF NUMBER OF FORMS
-ggplot(coio.mtif.summ, aes(x = log10(no.mTifs))) +
+ggplot(coio.mtif.summ, aes(x = log2(no.mTifs))) +
   geom_histogram() +
   ylab("Counts") +
-  xlab("log10(No. mTIFs covering one intact ORF)") +
+  xlab("No. mTIFs covering one intact ORF per ORF") +
   theme(panel.border = element_rect(fill = NA, colour = "black"),
         axis.title.x = element_text(vjust = 0, size = 16),
         axis.title.y = element_text(vjust = 1, size = 16),
@@ -256,6 +256,7 @@ length(unique(coio.mtifs$gene.id)) == length(unique(coio.mtif.summ$gene.id))
 coio.mtif.filt10pc = coio.mtifs %>%
   group_by(gene.id) %>%
   filter(ypd.counts > 0.1 * sum(ypd.counts))
+
 dim(coio.mtif.filt10pc)
 dim(coio.mtifs)
 head(coio.mtif.filt10pc)
@@ -266,11 +267,32 @@ coio.mtif.filt10pc.summ  = coio.mtif.filt10pc %>%
 head(coio.mtif.filt10pc.summ)
 length(unique(coio.mtif.filt10pc.summ$gene.id)) == length(unique(coio.mtif.filt10pc$gene.id))
 # [1] TRUE
-ggplot(coio.mtif.filt10pc.summ, aes(x = log10(no.mTifs))) +
+length(unique(coio.mtifs$gene.id))
+# [1] 4729
+length(unique(coio.mtif.filt10pc$gene.id))
+# [1] 4597
+# DON'T UNDERSTAND HOW THIS CAN BE DIFFERENT...
+setdiff(unique(coio.mtifs$gene.id), unique(coio.mtif.filt10pc$gene.id))
+# WHAT DO THESE GENES LOOK LIKE
+foo = coio.mtifs %>%
+  filter(gene.id %in% setdiff(unique(coio.mtifs$gene.id), unique(coio.mtif.filt10pc$gene.id)))
+head(foo)
+dim(foo)
+length(unique(foo$gene.id)) == length(setdiff(unique(coio.mtifs$gene.id), unique(coio.mtif.filt10pc$gene.id)))
+
+foo2 = coio.mtifs %>%
+  filter(gene.id == "YAR018C")
+foo2 %>%
+  mutate(prop = ypd.counts/sum(ypd.counts))
+# SO IF DISTRIBUTION OF READS IS LARGE AND FLAT ENOUGH, THEN NONE IS > 10% OF THE SUM, NEED ANOTHER
+# METRIC...
+
+
+ggplot(coio.mtif.filt10pc.summ, aes(x = log2(no.mTifs))) +
   geom_histogram() +
   ylab("Counts") +
-  xlab("log10(No. mTIFs covering one intact ORF)") +
-  ggtitle("mTIFs constituting > 10% of per gene sum of ypd.counts")
+  xlab("No. mTIFs covering one intact ORF") +
+  ggtitle("mTIFs constituting > 10% of per gene sum of ypd.counts") +
   theme(panel.border = element_rect(fill = NA, colour = "black"),
         axis.title.x = element_text(vjust = 0, size = 16),
         axis.title.y = element_text(vjust = 1, size = 16),
@@ -281,6 +303,7 @@ ggplot(coio.mtif.filt10pc.summ, aes(x = log10(no.mTifs))) +
         legend.title = element_text(size = 14),
         strip.text.x = element_text(size = 12),
         strip.text.y = element_text(size = 12))
+
 
 
 
