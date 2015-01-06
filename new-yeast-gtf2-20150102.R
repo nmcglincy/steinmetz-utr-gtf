@@ -222,3 +222,73 @@ system("cat sac_cer_yassour_utr.gtf igt_mtif_asm.gtf > sc_yassour_utr_steinmetz_
 # 
 # NOW TO THE MORE USUAL MTIFS
 head(coio.mtifs)
+library(dplyr)
+
+length(unique(coio.mtifs$gene.id))
+coio.mtif.summ = coio.mtifs %>%
+  group_by(gene.id) %>%
+  summarise(sum.ypd.counts = sum(ypd.counts),
+            no.mTifs = length(ypd.counts))
+coio.mtif.summ
+with(coio.mtif.summ, plot(log10(no.mTifs),log10(sum.ypd.counts)))
+
+# DISTRIBUTION OF NUMBER OF FORMS
+ggplot(coio.mtif.summ, aes(x = log10(no.mTifs))) +
+  geom_histogram() +
+  ylab("Counts") +
+  xlab("log10(No. mTIFs covering one intact ORF)") +
+  theme(panel.border = element_rect(fill = NA, colour = "black"),
+        axis.title.x = element_text(vjust = 0, size = 16),
+        axis.title.y = element_text(vjust = 1, size = 16),
+        axis.text.x = element_text(size=14, vjust = 0.5),
+        axis.text.y = element_text(size=14, vjust = 0.5),
+        plot.title = element_text(size = 16),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 14),
+        strip.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12))
+ggsave("no-mtifs-each-coio.png", dpi = 400)
+
+length(unique(coio.mtifs$gene.id)) == length(unique(coio.mtif.summ$gene.id))
+# [1] TRUE
+# HOW MUCH DO THESE FORMS DIFFER BY?
+
+coio.mtif.filt10pc = coio.mtifs %>%
+  group_by(gene.id) %>%
+  filter(ypd.counts > 0.1 * sum(ypd.counts))
+dim(coio.mtif.filt10pc)
+dim(coio.mtifs)
+head(coio.mtif.filt10pc)
+coio.mtif.filt10pc.summ  = coio.mtif.filt10pc %>%
+  group_by(gene.id) %>%
+  summarise(sum.ypd.counts = sum(ypd.counts),
+            no.mTifs = length(ypd.counts))
+head(coio.mtif.filt10pc.summ)
+length(unique(coio.mtif.filt10pc.summ$gene.id)) == length(unique(coio.mtif.filt10pc$gene.id))
+# [1] TRUE
+ggplot(coio.mtif.filt10pc.summ, aes(x = log10(no.mTifs))) +
+  geom_histogram() +
+  ylab("Counts") +
+  xlab("log10(No. mTIFs covering one intact ORF)") +
+  ggtitle("mTIFs constituting > 10% of per gene sum of ypd.counts")
+  theme(panel.border = element_rect(fill = NA, colour = "black"),
+        axis.title.x = element_text(vjust = 0, size = 16),
+        axis.title.y = element_text(vjust = 1, size = 16),
+        axis.text.x = element_text(size=14, vjust = 0.5),
+        axis.text.y = element_text(size=14, vjust = 0.5),
+        plot.title = element_text(size = 16),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 14),
+        strip.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12))
+
+
+
+
+
+
+
+
+
+
+
