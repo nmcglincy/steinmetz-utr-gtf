@@ -219,4 +219,6 @@ write.table(igt.mtif.asm,
 # REFORMATING INTO GTF FORMAT AND FUSING TO NICK'S GTF
 system("awk -f anno-to-gtf2.awk igt-mtifs-asm-noHeader.txt > igt_mtif_asm.gtf")
 system("cat sac_cer_yassour_utr.gtf igt_mtif_asm.gtf > sc_yassour_utr_steinmetz_igt.gtf")
-
+# 
+# NOW TO THE MORE USUAL MTIFS
+head(coio.mtifs)
