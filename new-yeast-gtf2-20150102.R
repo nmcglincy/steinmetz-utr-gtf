@@ -221,7 +221,7 @@ system("awk -f anno-to-gtf2.awk igt-mtifs-asm-noHeader.txt > igt_mtif_asm.gtf")
 system("cat sac_cer_yassour_utr.gtf igt_mtif_asm.gtf > sc_yassour_utr_steinmetz_igt.gtf")
 # 
 # NOW TO THE MORE USUAL MTIFS
-head(coio.mtifs)
+library(plyr)
 library(dplyr)
 
 length(unique(coio.mtifs$gene.id))
@@ -253,62 +253,118 @@ length(unique(coio.mtifs$gene.id)) == length(unique(coio.mtif.summ$gene.id))
 # [1] TRUE
 # HOW MUCH DO THESE FORMS DIFFER BY?
 
-coio.mtif.filt10pc = coio.mtifs %>%
+coio.mtif.filt = coio.mtifs %>%
   group_by(gene.id) %>%
-  filter(ypd.counts > 0.1 * sum(ypd.counts))
+  filter(cume_dist(ypd.counts) > 0.2)
 
-dim(coio.mtif.filt10pc)
-dim(coio.mtifs)
-head(coio.mtif.filt10pc)
-coio.mtif.filt10pc.summ  = coio.mtif.filt10pc %>%
+coio.mtif.filt.summ  = coio.mtif.filt %>%
   group_by(gene.id) %>%
   summarise(sum.ypd.counts = sum(ypd.counts),
             no.mTifs = length(ypd.counts))
-head(coio.mtif.filt10pc.summ)
-length(unique(coio.mtif.filt10pc.summ$gene.id)) == length(unique(coio.mtif.filt10pc$gene.id))
-# [1] TRUE
-length(unique(coio.mtifs$gene.id))
-# [1] 4729
-length(unique(coio.mtif.filt10pc$gene.id))
-# [1] 4597
-# DON'T UNDERSTAND HOW THIS CAN BE DIFFERENT...
-setdiff(unique(coio.mtifs$gene.id), unique(coio.mtif.filt10pc$gene.id))
-# WHAT DO THESE GENES LOOK LIKE
-foo = coio.mtifs %>%
-  filter(gene.id %in% setdiff(unique(coio.mtifs$gene.id), unique(coio.mtif.filt10pc$gene.id)))
+
+# length(unique(coio.mtif.filt.summ$gene.id)) == length(unique(coio.mtif.filt$gene.id))
+# # [1] TRUE
+# length(unique(coio.mtifs$gene.id))
+# # [1] 4729
+# dim(coio.mtifs)
+# # [1] 136687      7
+# length(unique(coio.mtif.filt$gene.id))
+# # [1] 4729
+# dim(coio.mtif.filt)
+# [1] 117429      7
+
+# setdiff(unique(coio.mtifs$gene.id), unique(coio.mtif.filt$gene.id))
+# # WHAT DO THESE GENES LOOK LIKE
+# foo = coio.mtifs %>%
+#   filter(gene.id %in% setdiff(unique(coio.mtifs$gene.id), unique(coio.mtif.filt$gene.id)))
+# head(foo)
+# dim(foo)
+# length(unique(foo$gene.id)) == length(setdiff(unique(coio.mtifs$gene.id), unique(coio.mtif.filt$gene.id)))
+# 
+# foo2 = coio.mtifs %>%
+#   filter(gene.id == "YAR018C")
+# foo2 %>%
+#   mutate(prop = ypd.counts/sum(ypd.counts),
+#          cume.dist = cume_dist(ypd.counts)) %>%
+#   filter(cume.dist > 0.25)
+# # SO IF DISTRIBUTION OF READS IS LARGE AND FLAT ENOUGH, THEN NONE IS > 10% OF THE SUM, NEED ANOTHER
+# # METRIC...
+# # THIS LOOKS INTERESTING:
+# # cume_dist: a cumulative distribution function. Proportion of all values less than or equal to the current rank.
+# dim(foo)
+# foofoo = foo %>%
+#   group_by(gene.id) %>%
+#   filter(cume_dist(ypd.counts) > min(cume_dist(ypd.counts)))
+# dim(foofoo)
+
+# ggplot(coio.mtif.filt.summ, aes(x = no.mTifs)) +
+#   geom_histogram() +
+#   ylab("Counts") +
+#   xlab("No. mTIFs covering one intact ORF") +
+#   theme(panel.border = element_rect(fill = NA, colour = "black"),
+#         axis.title.x = element_text(vjust = 0, size = 16),
+#         axis.title.y = element_text(vjust = 1, size = 16),
+#         axis.text.x = element_text(size=14, vjust = 0.5),
+#         axis.text.y = element_text(size=14, vjust = 0.5),
+#         plot.title = element_text(size = 16),
+#         legend.text = element_text(size = 12),
+#         legend.title = element_text(size = 14),
+#         strip.text.x = element_text(size = 12),
+#         strip.text.y = element_text(size = 12))
+# 
+# ggplot(coio.mtif.filt.summ, aes(x = log10(no.mTifs), y = log10(sum.ypd.counts))) +
+#   geom_point() +
+#   theme(panel.border = element_rect(fill = NA, colour = "black"),
+#         axis.title.x = element_text(vjust = 0, size = 16),
+#         axis.title.y = element_text(vjust = 1, size = 16),
+#         axis.text.x = element_text(size=14, vjust = 0.5),
+#         axis.text.y = element_text(size=14, vjust = 0.5),
+#         plot.title = element_text(size = 16),
+#         legend.text = element_text(size = 12),
+#         legend.title = element_text(size = 14),
+#         strip.text.x = element_text(size = 12),
+#         strip.text.y = element_text(size = 12))
+
+head(coio.mtif.filt)
+# 
+# CONVERT INTO GRANGES OBJEC
+coio.mtif.filt.gr = makeGRangesFromDataFrame(coio.mtif.filt,
+                                        keep.extra.columns = TRUE,
+                                        ignore.strand = FALSE,
+                                        seqnames.field = c("chr"),
+                                        start.field = c("start"),
+                                        end.field = c("end"),
+                                        strand.field = c("strand"))
+head(coio.mtif.filt)
+unique(coio.mtif.filt$gene.id)
+
+coio.mtif.filt.gr.rd = reduce(coio.mtif.filt.gr,
+                              drop.empty.ranges = FALSE,
+                              min.gapwidth = 0,
+                              with.revmap = TRUE)
+
+coio.mtif.filt.gr.l = split(coio.mtif.filt.gr, coio.mtif.filt.gr$gene.id, drop = TRUE)
+head(coio.mtif.filt.gr.l)
+length(coio.mtif.filt.gr.l)
+coio.mtif.filt.gr.l.rd = lapply(coio.mtif.filt.gr.l, reduce, drop.empty.ranges = FALSE,
+                                min.gapwidth = 0,
+                                with.revmap = TRUE)
+head(coio.mtif.filt.gr.l.rd)
+length(coio.mtif.filt.gr.l.rd)
+length(coio.mtif.filt.gr.l.rd) == length(unique(coio.mtif.filt.gr$gene.id))
+bar = unlist(coio.mtif.filt.gr.l.rd, recursive = TRUE, use.names = TRUE)
+head(bar)
+class(bar)
+class(coio.mtif.filt.gr.l.rd)
+
+
+coio.mtif.filt.gr.l.rd = lapply(coio.mtif.filt.gr.l.rd, as.data.frame, row.names = NULL)
+head(coio.mtif.filt.gr.l.rd)
+foo = ldply(coio.mtif.filt.gr.l.rd)
 head(foo)
 dim(foo)
-length(unique(foo$gene.id)) == length(setdiff(unique(coio.mtifs$gene.id), unique(coio.mtif.filt10pc$gene.id)))
-
-foo2 = coio.mtifs %>%
-  filter(gene.id == "YAR018C")
-foo2 %>%
-  mutate(prop = ypd.counts/sum(ypd.counts))
-# SO IF DISTRIBUTION OF READS IS LARGE AND FLAT ENOUGH, THEN NONE IS > 10% OF THE SUM, NEED ANOTHER
-# METRIC...
-
-
-ggplot(coio.mtif.filt10pc.summ, aes(x = log2(no.mTifs))) +
-  geom_histogram() +
-  ylab("Counts") +
-  xlab("No. mTIFs covering one intact ORF") +
-  ggtitle("mTIFs constituting > 10% of per gene sum of ypd.counts") +
-  theme(panel.border = element_rect(fill = NA, colour = "black"),
-        axis.title.x = element_text(vjust = 0, size = 16),
-        axis.title.y = element_text(vjust = 1, size = 16),
-        axis.text.x = element_text(size=14, vjust = 0.5),
-        axis.text.y = element_text(size=14, vjust = 0.5),
-        plot.title = element_text(size = 16),
-        legend.text = element_text(size = 12),
-        legend.title = element_text(size = 14),
-        strip.text.x = element_text(size = 12),
-        strip.text.y = element_text(size = 12))
-
-
-
-
-
-
+# DROP THE REVMAP
+foo = foo[,1:6]
 
 
 
