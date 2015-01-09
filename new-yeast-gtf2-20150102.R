@@ -173,39 +173,39 @@ igt.mtif.asm = data.frame(igt.mtifs.gr.rd.df[,1:5],
 # head(igt.mtif.asm)
 # tail(igt.mtif.asm)
 #  - GRAPH MIGHT BE NICE - WIDTH AND NO.READS DISTRIBUTION
-# library(ggplot2)
-# ggplot(igt.mtif.asm, aes(x = width)) +
-#   geom_histogram() +
-#   scale_x_continuous(breaks = seq(0, 6000, by = 1000)) +  
-#   ylab("Counts") +
-#   xlab("IGT assembly width") +
-#   theme(panel.border = element_rect(fill = NA, colour = "black"),
-#         axis.title.x = element_text(vjust = 0, size = 16),
-#         axis.title.y = element_text(vjust = 1, size = 16),
-#         axis.text.x = element_text(size=14, vjust = 0.5),
-#         axis.text.y = element_text(size=14, vjust = 0.5),
-#         plot.title = element_text(size = 16),
-#         legend.text = element_text(size = 12),
-#         legend.title = element_text(size = 14),
-#         strip.text.x = element_text(size = 12),
-#         strip.text.y = element_text(size = 12))
-# ggsave("mtif-asm-wdth.png", dpi = 400)
-# 
-# ggplot(igt.mtif.asm, aes(x = log10(ypd.counts))) +
-#   geom_histogram() +
-#   ylab("Counts") +
-#   xlab("log10(reads in YPD)") +
-#   theme(panel.border = element_rect(fill = NA, colour = "black"),
-#         axis.title.x = element_text(vjust = 0, size = 16),
-#         axis.title.y = element_text(vjust = 1, size = 16),
-#         axis.text.x = element_text(size=14, vjust = 0.5),
-#         axis.text.y = element_text(size=14, vjust = 0.5),
-#         plot.title = element_text(size = 16),
-#         legend.text = element_text(size = 12),
-#         legend.title = element_text(size = 14),
-#         strip.text.x = element_text(size = 12),
-#         strip.text.y = element_text(size = 12))
-# ggsave("mtif-asm-ypdReads.png", dpi = 400)
+library(ggplot2)
+ggplot(igt.mtif.asm, aes(x = width)) +
+  geom_histogram() +
+  scale_x_continuous(breaks = seq(0, 6000, by = 1000)) +  
+  ylab("Counts") +
+  xlab("IGT assembly width") +
+  theme(panel.border = element_rect(fill = NA, colour = "black"),
+        axis.title.x = element_text(vjust = 0, size = 26),
+        axis.title.y = element_text(vjust = 1, size = 26),
+        axis.text.x = element_text(size=24, vjust = 0.5),
+        axis.text.y = element_text(size=24, vjust = 0.5),
+        plot.title = element_text(size = 16),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 14),
+        strip.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12))
+ggsave("mtif-asm-wdth.png", dpi = 400)
+
+ggplot(igt.mtif.asm, aes(x = log10(ypd.counts))) +
+  geom_histogram() +
+  ylab("Counts") +
+  xlab("log10(reads in YPD)") +
+  theme(panel.border = element_rect(fill = NA, colour = "black"),
+        axis.title.x = element_text(vjust = 0, size = 26),
+        axis.title.y = element_text(vjust = 1, size = 26),
+        axis.text.x = element_text(size=24, vjust = 0.5),
+        axis.text.y = element_text(size=24, vjust = 0.5),
+        plot.title = element_text(size = 16),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 14),
+        strip.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12))
+ggsave("mtif-asm-ypdReads.png", dpi = 400)
 # 
 # WRTIE OUT FOR POSTERITY
 write.table(igt.mtif.asm,
@@ -360,6 +360,7 @@ system('grep -w "exon" sac_cer_yassour_utr.gtf > sac_cer_yassour_exon.gtf')
 library(rtracklayer)
 gtf = import("sac_cer_yassour_exon.gtf", format = "GFF", asRangedData = FALSE)
 gtf
-
+# chr names are different
+# gene names are not so accessible
 
 
