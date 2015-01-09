@@ -16,9 +16,12 @@
 BEGIN { OFS = "\t" }
 {
 	if ( length($2) < 2) {
-        print "chr0" $2, "steinmetz_mTIFs_coio" , "exon" , $3 , $4 , "0" , $6 , "." , "gene_id  \"" $1 "\"; transcript_id \"" $1 "\";"
+        print "chr0" $2, "steinmetz_mTIFs_coio" , "exon" , $3 , $4 , "0" , $6 , "." , $1
     } else {
-        print "chr" $2, "steinmetz_mTIFs_coio" , "exon" , $3 , $4 , "0" , $6 , "." , "gene_id  \"" $1 "\"; transcript_id \"" $1 "\";"
+        print "chr" $2, "steinmetz_mTIFs_coio" , "exon" , $3 , $4 , "0" , $6 , "." , $1
     }
 	
 }
+#
+# OLD LAST FIELD
+# "gene_id  \"" $1 "\"; transcript_id \"" $1 "\";"

@@ -281,10 +281,70 @@ system('awk -f coio-mtif-filt-reformatter.awk coio-mtif-filt.txt > coio-mtif-fil
 # 
 # JOIN WITH ONLY THE EXON LINES OF THE YASSOUR GTF FOR THE SUBSUMATION
 # TAKE JUST THE LINES WITH EXON
-system('grep -w "exon" sac_cer_yassour_utr.gtf > sac_cer_yassour_exon.gtf')
+system('grep -w "exon" sac_cer_yassour_utr.gtf | awk -f make-normal-gene-names.awk > sac_cer_yassour_exon.gtf')
 # 
 # JOIN USING CAT
 system('cat coio-mtif-filt.gtf sac_cer_yassour_exon.gtf > sac_cer_exon.gtf')
+#
+# READ IN THE NEW GTF, SPLIT IT INTO A LIST BY GENE NAME, THE USED REDUCE TO SUBSUME OVERLAPPING
+# ALIGNMENTS
+library(rtracklayer)
+exon.gtf = import("sac_cer_exon.gtf", format = "GFF", asRangedData = FALSE)
+exon.gtf
+length(exon.gtf)
+names(exon.gtf) = mcols(exon.gtf)$group
+exon.gtf.l = split(exon.gtf, exon.gtf$group)
+length(unique(exon.gtf$group))
+length(exon.gtf.l)
+el.before = elementLengths(exon.gtf.l)
+table(el.before)
+# el.before
+#    1    2    3    4    5    6    8 
+# 1885 4640  157   11    1    1    1 
+test3 = exon.gtf.l[which(elementLengths(exon.gtf.l) == 3)][[1]]
+exon.gtf.l.rd = lapply(exon.gtf.l, 
+                       reduce, 
+                       drop.empty.ranges = FALSE,
+                       min.gapwidth = 0,
+                       with.revmap = FALSE)
+el.after = elementLengths(exon.gtf.l.rd)
+table(el.after)
+
+elementLengths(exon.gtf.l[1])
+
+foo = exon.gtf.l$YAL002W
+sum(elementLengths(foo))
+
+if (sum(elementLengths(foo)) == 2) {
+  if (length(unique(foo$source))) {
+    bar = subset(foo, foo$source == "steinmetz_mTIFs_coio")
+  }
+}
+bar
+rm(bar)
+exon.gtf.l[[1]]$source
+test3$source == "steinmetz_mTIFs_coio"
+ranges(test3)
+start(test3)[which(test3$source == "steinmetz_mTIFs_coio")]
+end(test3)
+foo = GRanges(seqnames = seqnames(test3)[1:length(test3)-1],
+              ranges = IRanges(start = c(start(test3)[which(test3$source == "steinmetz_mTIFs_coio")]
+                                         ),
+                               end = c(end(test3)[which(test3$source == "steinmetz_mTIFs_coio")],
+                                       )),
+              )
+
+for (i in 1:length(exon.gtf.l)) {
+  if (sum(elementLengths(exon.gtf.l[[i]])) == 2) {
+    if (length(unique(exon.gtf.l[[i]]$source)) == 2) {
+      exon.gtf.l[[i]] = subset(exon.gtf.l[[i]], exon.gtf.l[[i]]$source == "steinmetz_mTIFs_coio")
+    }
+  } else if (sum(elementLengths(exon.gtf.l[[i]])) == 3) {
+    if (length(unique(exon.gtf.l[[i]]$source)) == 2) {
+      
+    }
+  }
+}
 
 
 
