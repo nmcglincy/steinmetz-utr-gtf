@@ -238,62 +238,9 @@ dim(coio.mtifs)
 length(unique(coio.mtif.filt$gene.id))
 # # [1] 4729
 dim(coio.mtif.filt)
-# [1] 117429      7
-
-# setdiff(unique(coio.mtifs$gene.id), unique(coio.mtif.filt$gene.id))
-# # WHAT DO THESE GENES LOOK LIKE
-# foo = coio.mtifs %>%
-#   filter(gene.id %in% setdiff(unique(coio.mtifs$gene.id), unique(coio.mtif.filt$gene.id)))
-# head(foo)
-# dim(foo)
-# length(unique(foo$gene.id)) == length(setdiff(unique(coio.mtifs$gene.id), unique(coio.mtif.filt$gene.id)))
+# [1] 123719      7
 # 
-# foo2 = coio.mtifs %>%
-#   filter(gene.id == "YAR018C")
-# foo2 %>%
-#   mutate(prop = ypd.counts/sum(ypd.counts),
-#          cume.dist = cume_dist(ypd.counts)) %>%
-#   filter(cume.dist > 0.25)
-# # SO IF DISTRIBUTION OF READS IS LARGE AND FLAT ENOUGH, THEN NONE IS > 10% OF THE SUM, NEED ANOTHER
-# # METRIC...
-# # THIS LOOKS INTERESTING:
-# # cume_dist: a cumulative distribution function. Proportion of all values less than or equal to the current rank.
-# dim(foo)
-# foofoo = foo %>%
-#   group_by(gene.id) %>%
-#   filter(cume_dist(ypd.counts) > min(cume_dist(ypd.counts)))
-# dim(foofoo)
-
-# ggplot(coio.mtif.filt.summ, aes(x = no.mTifs)) +
-#   geom_histogram() +
-#   ylab("Counts") +
-#   xlab("No. mTIFs covering one intact ORF") +
-#   theme(panel.border = element_rect(fill = NA, colour = "black"),
-#         axis.title.x = element_text(vjust = 0, size = 16),
-#         axis.title.y = element_text(vjust = 1, size = 16),
-#         axis.text.x = element_text(size=14, vjust = 0.5),
-#         axis.text.y = element_text(size=14, vjust = 0.5),
-#         plot.title = element_text(size = 16),
-#         legend.text = element_text(size = 12),
-#         legend.title = element_text(size = 14),
-#         strip.text.x = element_text(size = 12),
-#         strip.text.y = element_text(size = 12))
-# 
-# ggplot(coio.mtif.filt.summ, aes(x = log10(no.mTifs), y = log10(sum.ypd.counts))) +
-#   geom_point() +
-#   theme(panel.border = element_rect(fill = NA, colour = "black"),
-#         axis.title.x = element_text(vjust = 0, size = 16),
-#         axis.title.y = element_text(vjust = 1, size = 16),
-#         axis.text.x = element_text(size=14, vjust = 0.5),
-#         axis.text.y = element_text(size=14, vjust = 0.5),
-#         plot.title = element_text(size = 16),
-#         legend.text = element_text(size = 12),
-#         legend.title = element_text(size = 14),
-#         strip.text.x = element_text(size = 12),
-#         strip.text.y = element_text(size = 12))
-
-# 
-# CONVERT INTO REDUCED GRANGES OBJECT
+# CONVERT FILTERED MTIFS INTO A GRANGES OBJECT
 coio.mtif.filt.gr = makeGRangesFromDataFrame(coio.mtif.filt,
                                         keep.extra.columns = TRUE,
                                         ignore.strand = FALSE,
@@ -301,17 +248,46 @@ coio.mtif.filt.gr = makeGRangesFromDataFrame(coio.mtif.filt,
                                         start.field = c("start"),
                                         end.field = c("end"),
                                         strand.field = c("strand"))
-coio.mtif.filt.gr.rd = reduce(coio.mtif.filt.gr,
-                              drop.empty.ranges = FALSE,
-                              min.gapwidth = 0,
-                              with.revmap = TRUE)
-coio.mtif.filt.gr.l = split(coio.mtif.filt.gr, coio.mtif.filt.gr$gene.id, drop = TRUE)
-coio.mtif.filt.gr.l.rd = lapply(coio.mtif.filt.gr.l, reduce, drop.empty.ranges = FALSE,
+# 
+# SPLIT INTO A GRANGESLIST BY GENE.ID
+coio.mtif.filt.gr.l = split(coio.mtif.filt.gr, 
+                            coio.mtif.filt.gr$gene.id, 
+                            drop = TRUE)
+# 
+# SUBSUME THE ALIGNMENTS FOR EACH GENE BY LAPPLY-ING REDUCE()
+coio.mtif.filt.gr.l.rd = lapply(coio.mtif.filt.gr.l, 
+                                reduce, 
+                                drop.empty.ranges = FALSE,
                                 min.gapwidth = 0,
                                 with.revmap = FALSE)
-coio.mtif.filt.gr.l.rd = lapply(coio.mtif.filt.gr.l.rd, as.data.frame, row.names = NULL)
+# 
+# CAN'T SEEM TO UNLIST THIS, SO I'M GOING TO MAKE IT INTO A DATAFRAME, THEN CONVERT IS BACK INTO A GRANGES OBJECT
+coio.mtif.filt.gr.l.rd = lapply(coio.mtif.filt.gr.l.rd, 
+                                as.data.frame, 
+                                row.names = NULL)
 coio.mtif.filt.df = ldply(coio.mtif.filt.gr.l.rd)
 colnames(coio.mtif.filt.df) = c("gene.id", "chr", "start", "end", "length", "strand")
+# 
+# WRITE OUT AS TABLE TO REFORMAT IN AWK
+write.table(coio.mtif.filt.df,
+            file = "coio-mtif-filt.txt",
+            sep = "\t",
+            quote = FALSE,
+            row.names = FALSE,
+            col.names = FALSE)
+# 
+# REFORMAT WITH coio-mtif-filt-reformatter.awk
+system('awk -f coio-mtif-filt-reformatter.awk coio-mtif-filt.txt > coio-mtif-filt.gtf')
+# 
+# JOIN WITH ONLY THE EXON LINES OF THE YASSOUR GTF FOR THE SUBSUMATION
+# TAKE JUST THE LINES WITH EXON
+system('grep -w "exon" sac_cer_yassour_utr.gtf > sac_cer_yassour_exon.gtf')
+# 
+# JOIN USING CAT
+system('cat coio-mtif-filt.gtf sac_cer_yassour_exon.gtf > sac_cer_exon.gtf')
+
+
+
 coio.mtif.filt.rd.gr = makeGRangesFromDataFrame(coio.mtif.filt.df,
                                                 keep.extra.columns = TRUE,
                                                 ignore.strand = FALSE,
@@ -327,6 +303,7 @@ system('grep -w "exon" sac_cer_yassour_utr.gtf > sac_cer_yassour_exon.gtf')
 library(rtracklayer)
 gtf = import("sac_cer_yassour_exon.gtf", format = "GFF", asRangedData = FALSE)
 gtf
+coio.mtif.filt.rd.gr
 # chr names are different
 # gene names are not so accessible
 
