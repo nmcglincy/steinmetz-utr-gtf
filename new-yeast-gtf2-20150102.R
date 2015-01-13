@@ -151,39 +151,39 @@ igt.mtif.asm = data.frame(igt.mtifs.gr.rd.df[,1:5],
                                                      function(x) {sum(igt.mtifs.gr[x]$ypd.counts)})))
 # 
 # WIDTH AND NO.READS DISTRIBUTION OF IGT MTIF ASSEMBLIES
-library(ggplot2)
-ggplot(igt.mtif.asm, aes(x = width)) +
-  geom_histogram() +
-  scale_x_continuous(breaks = seq(0, 6000, by = 1000)) +  
-  ylab("Counts") +
-  xlab("IGT assembly width") +
-  theme(panel.border = element_rect(fill = NA, colour = "black"),
-        axis.title.x = element_text(vjust = 0, size = 26),
-        axis.title.y = element_text(vjust = 1, size = 26),
-        axis.text.x = element_text(size=24, vjust = 0.5),
-        axis.text.y = element_text(size=24, vjust = 0.5),
-        plot.title = element_text(size = 16),
-        legend.text = element_text(size = 12),
-        legend.title = element_text(size = 14),
-        strip.text.x = element_text(size = 12),
-        strip.text.y = element_text(size = 12))
-ggsave("igt-mtif-asm-wdth.png", dpi = 400)
+# library(ggplot2)
+# ggplot(igt.mtif.asm, aes(x = width)) +
+#   geom_histogram() +
+#   scale_x_continuous(breaks = seq(0, 6000, by = 1000)) +  
+#   ylab("Counts") +
+#   xlab("IGT assembly width") +
+#   theme(panel.border = element_rect(fill = NA, colour = "black"),
+#         axis.title.x = element_text(vjust = 0, size = 26),
+#         axis.title.y = element_text(vjust = 1, size = 26),
+#         axis.text.x = element_text(size=24, vjust = 0.5),
+#         axis.text.y = element_text(size=24, vjust = 0.5),
+#         plot.title = element_text(size = 16),
+#         legend.text = element_text(size = 12),
+#         legend.title = element_text(size = 14),
+#         strip.text.x = element_text(size = 12),
+#         strip.text.y = element_text(size = 12))
+# ggsave("igt-mtif-asm-wdth.png", dpi = 400)
 
-ggplot(igt.mtif.asm, aes(x = log10(ypd.counts))) +
-  geom_histogram() +
-  ylab("Counts") +
-  xlab("log10(reads in YPD)") +
-  theme(panel.border = element_rect(fill = NA, colour = "black"),
-        axis.title.x = element_text(vjust = 0, size = 26),
-        axis.title.y = element_text(vjust = 1, size = 26),
-        axis.text.x = element_text(size=24, vjust = 0.5),
-        axis.text.y = element_text(size=24, vjust = 0.5),
-        plot.title = element_text(size = 16),
-        legend.text = element_text(size = 12),
-        legend.title = element_text(size = 14),
-        strip.text.x = element_text(size = 12),
-        strip.text.y = element_text(size = 12))
-ggsave("igt-mtif-asm-ypdReads.png", dpi = 400)
+# ggplot(igt.mtif.asm, aes(x = log10(ypd.counts))) +
+#   geom_histogram() +
+#   ylab("Counts") +
+#   xlab("log10(reads in YPD)") +
+#   theme(panel.border = element_rect(fill = NA, colour = "black"),
+#         axis.title.x = element_text(vjust = 0, size = 26),
+#         axis.title.y = element_text(vjust = 1, size = 26),
+#         axis.text.x = element_text(size=24, vjust = 0.5),
+#         axis.text.y = element_text(size=24, vjust = 0.5),
+#         plot.title = element_text(size = 16),
+#         legend.text = element_text(size = 12),
+#         legend.title = element_text(size = 14),
+#         strip.text.x = element_text(size = 12),
+#         strip.text.y = element_text(size = 12))
+# ggsave("igt-mtif-asm-ypdReads.png", dpi = 400)
 # 
 # WRTIE OUT FOR POSTERITY
 write.table(igt.mtif.asm,
@@ -208,37 +208,37 @@ coio.mtif.summ = coio.mtifs %>%
             no.mTifs = length(ypd.counts))
 # 
 # DISTRIBUTION OF NUMBER OF FORMS
-ggplot(coio.mtif.summ, aes(x = log2(no.mTifs))) +
-  geom_histogram() +
-  ylab("Counts") +
-  xlab("No. mTIFs covering one intact ORF per ORF") +
-  theme(panel.border = element_rect(fill = NA, colour = "black"),
-        axis.title.x = element_text(vjust = 0, size = 16),
-        axis.title.y = element_text(vjust = 1, size = 16),
-        axis.text.x = element_text(size=14, vjust = 0.5),
-        axis.text.y = element_text(size=14, vjust = 0.5),
-        plot.title = element_text(size = 16),
-        legend.text = element_text(size = 12),
-        legend.title = element_text(size = 14),
-        strip.text.x = element_text(size = 12),
-        strip.text.y = element_text(size = 12))
-ggsave("no-mtifs-each-coio.png", dpi = 400)
+# ggplot(coio.mtif.summ, aes(x = log2(no.mTifs))) +
+#   geom_histogram() +
+#   ylab("Counts") +
+#   xlab("No. mTIFs covering one intact ORF per ORF") +
+#   theme(panel.border = element_rect(fill = NA, colour = "black"),
+#         axis.title.x = element_text(vjust = 0, size = 16),
+#         axis.title.y = element_text(vjust = 1, size = 16),
+#         axis.text.x = element_text(size=14, vjust = 0.5),
+#         axis.text.y = element_text(size=14, vjust = 0.5),
+#         plot.title = element_text(size = 16),
+#         legend.text = element_text(size = 12),
+#         legend.title = element_text(size = 14),
+#         strip.text.x = element_text(size = 12),
+#         strip.text.y = element_text(size = 12))
+# ggsave("no-mtifs-each-coio.png", dpi = 400)
 # 
 # FILTER EACH GENE, REMOVE THE BOTTOM 20% BY cume_dist()
 coio.mtif.filt = coio.mtifs %>%
   group_by(gene.id) %>%
   filter(cume_dist(ypd.counts) > 0.2)
 # 
-length(unique(coio.mtif$gene.id)) == length(unique(coio.mtif.filt$gene.id))
-# # [1] TRUE
-length(unique(coio.mtifs$gene.id))
-# # [1] 4729
-dim(coio.mtifs)
-# # [1] 136687      7
-length(unique(coio.mtif.filt$gene.id))
-# # [1] 4729
-dim(coio.mtif.filt)
-# [1] 123719      7
+# length(unique(coio.mtif$gene.id)) == length(unique(coio.mtif.filt$gene.id))
+# # # [1] TRUE
+# length(unique(coio.mtifs$gene.id))
+# # # [1] 4729
+# dim(coio.mtifs)
+# # # [1] 136687      7
+# length(unique(coio.mtif.filt$gene.id))
+# # # [1] 4729
+# dim(coio.mtif.filt)
+# # [1] 123719      7
 # 
 # CONVERT FILTERED MTIFS INTO A GRANGES OBJECT
 coio.mtif.filt.gr = makeGRangesFromDataFrame(coio.mtif.filt,
@@ -290,52 +290,29 @@ system('cat coio-mtif-filt.gtf sac_cer_yassour_exon.gtf > sac_cer_exon.gtf')
 # ALIGNMENTS
 library(rtracklayer)
 exon.gtf = import("sac_cer_exon.gtf", format = "GFF", asRangedData = FALSE)
-exon.gtf
-length(exon.gtf)
+# exon.gtf
+# length(exon.gtf)
 names(exon.gtf) = mcols(exon.gtf)$group
 exon.gtf.l = split(exon.gtf, exon.gtf$group)
-length(unique(exon.gtf$group))
-length(exon.gtf.l)
+# length(unique(exon.gtf$group))
+# length(exon.gtf.l)
 el.before = elementLengths(exon.gtf.l)
 table(el.before)
 # el.before
 #    1    2    3    4    5    6    8 
 # 1885 4640  157   11    1    1    1 
-exon.gtf.l[[i]] = exon.gtf.l[which(elementLengths(exon.gtf.l) == 4)][[1]]
-exon.gtf.l.rd = lapply(exon.gtf.l, 
-                       reduce, 
-                       drop.empty.ranges = FALSE,
-                       min.gapwidth = 0,
-                       with.revmap = FALSE)
-el.after = elementLengths(exon.gtf.l.rd)
-table(el.after)
-
-elementLengths(exon.gtf.l[1])
-
-foo = exon.gtf.l$YAL002W
-sum(elementLengths(foo))
-
-if (sum(elementLengths(foo)) == 2) {
-  if (length(unique(foo$source))) {
-    bar = subset(foo, foo$source == "steinmetz_mTIFs_coio")
-  }
-}
-bar
-rm(bar)
-exon.gtf.l[[1]]$source
-test3$source == "steinmetz_mTIFs_coio"
-ranges(test3)
-start(test3)[which(test3$source == "steinmetz_mTIFs_coio")]
-end(test3)
-max(start(test3)[which(test3$source == "utr-analysis")])
-
-# GENERATING THE MULTI-LOOP
 # 
+# THIS MONSTER IS GOING TO TAKE THE STEINMETZ DATA, BUT ONLY WERE APPROPRIATE
+# 
+exon.gtf.l[[1]]
+sum(elementLengths(exon.gtf.l[[1]]))
+
 for (i in 1:length(exon.gtf.l)) {
   if (sum(elementLengths(exon.gtf.l[[i]])) == 2) {
     if (length(unique(exon.gtf.l[[i]]$source)) == 2) {
       exon.gtf.l[[i]] = subset(exon.gtf.l[[i]], exon.gtf.l[[i]]$source == "steinmetz_mTIFs_coio")
-    }
+    }}}
+    
   } else if (sum(elementLengths(exon.gtf.l[[i]])) == 3) {
 	    if (length(unique(exon.gtf.l[[i]]$source)) == 2) {
 	      exon.gtf.l[[i]] = GRanges(seqnames = seqnames(exon.gtf.l[[i]])[1:length(exon.gtf.l[[i]])-1],
@@ -362,21 +339,8 @@ for (i in 1:length(exon.gtf.l)) {
   	}
   }
 }
-# 
-# TESTING FOR THE FIVE EXON CASE
-test5 = = exon.gtf.l[which(elementLengths(exon.gtf.l) == 5)][[1]]
-
-foo5 = test5 = GRanges(seqnames = seqnames(test5)[1:length(test5)-1],
-                                  ranges   = IRanges(start = c(start(test5)[which(test5$source == "steinmetz_mTIFs_coio")],
-                                                               sort(start(test5)[which(test5$source == "utr-analysis")])[-1]),
-                                                     end   = c(sort(end(test5)[which(test5$source == "utr-analysis")])[1:length(sort(end(test5)[which(test5$source == "utr-analysis")]))-1],
-                                                               end(test5)[which(test5$source == "steinmetz_mTIFs_coio")])),
-                                  strand   = strand(test5)[1:length(test5)-1],
-                                  mcols    = mcols(test5)[which(test5$source == "utr-analysis"),])
-        names(test5) = mcols(test5)[,5]
-        mcols(test5)$mcols.source = "steinmetz_mTIFS_coio"
-
-
+el.aft = elementLengths(exon.gtf.l)
+table(el.aft)
 
 # coio.mtif.filt.rd.gr = makeGRangesFromDataFrame(coio.mtif.filt.df,
 #                                                 keep.extra.columns = TRUE,
