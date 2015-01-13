@@ -327,13 +327,23 @@ test3$source == "steinmetz_mTIFs_coio"
 ranges(test3)
 start(test3)[which(test3$source == "steinmetz_mTIFs_coio")]
 end(test3)
-foo = GRanges(seqnames = seqnames(test3)[1:length(test3)-1],
-              ranges = IRanges(start = c(start(test3)[which(test3$source == "steinmetz_mTIFs_coio")]
-                                         ),
-                               end = c(end(test3)[which(test3$source == "steinmetz_mTIFs_coio")],
-                                       )),
-              )
+max(start(test3)[which(test3$source == "utr-analysis")])
 
+
+foo = GRanges(seqnames = seqnames(test3)[1:length(test3)-1],
+              ranges = IRanges(start = c(start(test3)[which(test3$source == "steinmetz_mTIFs_coio")],
+                                         max(start(test3)[which(test3$source == "utr-analysis")])),
+                               end = c(min(end(test3)[which(test3$source == "utr-analysis")]),
+                                       end(test3)[which(test3$source == "steinmetz_mTIFs_coio")])),
+              strand = strand(test3)[1:length(test3)-1],
+              mcols = mcols(test3)[which(test3$source == "utr-analysis"),]
+              )
+names(foo) = mcols(foo)[,5]
+mcols(foo)$mcols.source = "steinmetz_mTIFS_coio"
+
+
+foo
+test3
 for (i in 1:length(exon.gtf.l)) {
   if (sum(elementLengths(exon.gtf.l[[i]])) == 2) {
     if (length(unique(exon.gtf.l[[i]]$source)) == 2) {
@@ -341,8 +351,20 @@ for (i in 1:length(exon.gtf.l)) {
     }
   } else if (sum(elementLengths(exon.gtf.l[[i]])) == 3) {
     if (length(unique(exon.gtf.l[[i]]$source)) == 2) {
-      
+      exon.gtf.l[[i]] = GRanges(seqnames = seqnames(exon.gtf.l[[i]])[1:length(exon.gtf.l[[i]])-1],
+          ranges = IRanges(start = c(start(exon.gtf.l[[i]])[which(exon.gtf.l[[i]]$source == "steinmetz_mTIFs_coio")],
+                                     max(start(exon.gtf.l[[i]])[which(exon.gtf.l[[i]]$source == "utr-analysis")])),
+                           end = c(min(end(exon.gtf.l[[i]])[which(exon.gtf.l[[i]]$source == "utr-analysis")]),
+                                   end(exon.gtf.l[[i]])[which(exon.gtf.l[[i]]$source == "steinmetz_mTIFs_coio")])),
+          strand = strand(exon.gtf.l[[i]])[1:length(exon.gtf.l[[i]])-1],
+          mcols = mcols(exon.gtf.l[[i]])[which(exon.gtf.l[[i]]$source == "utr-analysis"),])
+      names(exon.gtf.l[[i]]) = mcols(exon.gtf.l[[i]])[,5]
+      mcols(exon.gtf.l[[i]])$mcols.source = "steinmetz_mTIFS_coio"
     }
+  } else if (sum(elementLengths(exon.gtf.l[[i]])) > 3) {
+  	if (length(unique(exon.gtf.l[[i]]$source)) == 2) {
+  		
+  	}
   }
 }
 
