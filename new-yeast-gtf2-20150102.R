@@ -301,7 +301,7 @@ table(el.before)
 # el.before
 #    1    2    3    4    5    6    8 
 # 1885 4640  157   11    1    1    1 
-test3 = exon.gtf.l[which(elementLengths(exon.gtf.l) == 3)][[1]]
+test4 = exon.gtf.l[which(elementLengths(exon.gtf.l) == 4)][[1]]
 exon.gtf.l.rd = lapply(exon.gtf.l, 
                        reduce, 
                        drop.empty.ranges = FALSE,
@@ -329,21 +329,8 @@ start(test3)[which(test3$source == "steinmetz_mTIFs_coio")]
 end(test3)
 max(start(test3)[which(test3$source == "utr-analysis")])
 
+test4
 
-foo = GRanges(seqnames = seqnames(test3)[1:length(test3)-1],
-              ranges = IRanges(start = c(start(test3)[which(test3$source == "steinmetz_mTIFs_coio")],
-                                         max(start(test3)[which(test3$source == "utr-analysis")])),
-                               end = c(min(end(test3)[which(test3$source == "utr-analysis")]),
-                                       end(test3)[which(test3$source == "steinmetz_mTIFs_coio")])),
-              strand = strand(test3)[1:length(test3)-1],
-              mcols = mcols(test3)[which(test3$source == "utr-analysis"),]
-              )
-names(foo) = mcols(foo)[,5]
-mcols(foo)$mcols.source = "steinmetz_mTIFS_coio"
-
-
-foo
-test3
 for (i in 1:length(exon.gtf.l)) {
   if (sum(elementLengths(exon.gtf.l[[i]])) == 2) {
     if (length(unique(exon.gtf.l[[i]]$source)) == 2) {
@@ -361,10 +348,6 @@ for (i in 1:length(exon.gtf.l)) {
       names(exon.gtf.l[[i]]) = mcols(exon.gtf.l[[i]])[,5]
       mcols(exon.gtf.l[[i]])$mcols.source = "steinmetz_mTIFS_coio"
     }
-  } else if (sum(elementLengths(exon.gtf.l[[i]])) > 3) {
-  	if (length(unique(exon.gtf.l[[i]]$source)) == 2) {
-  		
-  	}
   }
 }
 
