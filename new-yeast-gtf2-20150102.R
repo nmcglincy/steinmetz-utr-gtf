@@ -301,7 +301,7 @@ table(el.before)
 # el.before
 #    1    2    3    4    5    6    8 
 # 1885 4640  157   11    1    1    1 
-test4 = exon.gtf.l[which(elementLengths(exon.gtf.l) == 4)][[1]]
+exon.gtf.l[[i]] = exon.gtf.l[which(elementLengths(exon.gtf.l) == 4)][[1]]
 exon.gtf.l.rd = lapply(exon.gtf.l, 
                        reduce, 
                        drop.empty.ranges = FALSE,
@@ -329,18 +329,8 @@ start(test3)[which(test3$source == "steinmetz_mTIFs_coio")]
 end(test3)
 max(start(test3)[which(test3$source == "utr-analysis")])
 
-sort(end(test4)[which(test4$source == "utr-analysis")])[1:length(sort(end(test4)[which(test4$source == "utr-analysis")]))-1]
-
-foo = GRanges(seqnames = seqnames(test4)[1:length(test4)-1],
-                          ranges = IRanges(start = c(start(test4)[which(test4$source == "steinmetz_mTIFs_coio")],
-                                                     sort(start(test4)[which(test4$source == "utr-analysis")])[-1]),
-                                           end   = c(sort(end(test4)[which(test4$source == "utr-analysis")])[1:length(sort(end(test4)[which(test4$source == "utr-analysis")]))-1],
-                                                     end(test4)[which(test4$source == "steinmetz_mTIFs_coio")])),
-                          strand = strand(test4)[1:length(test4)-1],
-                          mcols  = mcols(test4)[which(test4$source == "utr-analysis"),])
-foo
-test4
-
+# GENERATING THE MULTI-LOOP
+# 
 for (i in 1:length(exon.gtf.l)) {
   if (sum(elementLengths(exon.gtf.l[[i]])) == 2) {
     if (length(unique(exon.gtf.l[[i]]$source)) == 2) {
@@ -361,37 +351,50 @@ for (i in 1:length(exon.gtf.l)) {
   } else if (sum(elementLengths(exon.gtf.l[[i]])) > 3) {
   		if (length(unique(exon.gtf.l[[i]]$source)) == 2) {
   			exon.gtf.l[[i]] = GRanges(seqnames = seqnames(exon.gtf.l[[i]])[1:length(exon.gtf.l[[i]])-1],
-					  				ranges = IRanges(start = c(start(exon.gtf.l[[i]])[which(exon.gtf.l[[i]]$source == "steinmetz_mTIFs_coio")],
-					  										   sort(start(test4)[which(test4$source == "utr-analysis")])[-1]),
-					  								 end   = c(foo,
-					  								 		   end(exon.gtf.l[[i]])[which(exon.gtf.l[[i]]$source == "steinmetz_mTIFs_coio")])),
-					  				strand = strand(exon.gtf.l[[i]])[1:length(exon.gtf.l[[i]])-1],
-					  				mcols  = mcols(exon.gtf.l[[i]])[which(exon.gtf.l[[i]]$source == "utr-analysis"),])
+					  				              ranges   = IRanges(start = c(start(exon.gtf.l[[i]])[which(exon.gtf.l[[i]]$source == "steinmetz_mTIFs_coio")],
+					  										                               sort(start(exon.gtf.l[[i]])[which(exon.gtf.l[[i]]$source == "utr-analysis")])[-1]),
+					  								                         end   = c(sort(end(exon.gtf.l[[i]])[which(exon.gtf.l[[i]]$source == "utr-analysis")])[1:length(sort(end(exon.gtf.l[[i]])[which(exon.gtf.l[[i]]$source == "utr-analysis")]))-1],
+					  								 		                               end(exon.gtf.l[[i]])[which(exon.gtf.l[[i]]$source == "steinmetz_mTIFs_coio")])),
+					  				              strand   = strand(exon.gtf.l[[i]])[1:length(exon.gtf.l[[i]])-1],
+					  				              mcols    = mcols(exon.gtf.l[[i]])[which(exon.gtf.l[[i]]$source == "utr-analysis"),])
   			names(exon.gtf.l[[i]]) = mcols(exon.gtf.l[[i]])[,5]
-	      	mcols(exon.gtf.l[[i]])$mcols.source = "steinmetz_mTIFS_coio"	
+	      mcols(exon.gtf.l[[i]])$mcols.source = "steinmetz_mTIFS_coio"	
   	}
   }
 }
-
-
-
-coio.mtif.filt.rd.gr = makeGRangesFromDataFrame(coio.mtif.filt.df,
-                                                keep.extra.columns = TRUE,
-                                                ignore.strand = FALSE,
-                                                seqnames.field = c("chr"),
-                                                start.field = c("start"),
-                                                end.field = c("end"),
-                                                strand.field = c("strand"))
 # 
-# TAKE JUST THE LINES WITH EXON
-system('grep -w "exon" sac_cer_yassour_utr.gtf > sac_cer_yassour_exon.gtf')
-# 
-# READ IN NICK'S GTF
-library(rtracklayer)
-gtf = import("sac_cer_yassour_exon.gtf", format = "GFF", asRangedData = FALSE)
-gtf
-coio.mtif.filt.rd.gr
-# chr names are different
-# gene names are not so accessible
+# TESTING FOR THE FIVE EXON CASE
+test5 = = exon.gtf.l[which(elementLengths(exon.gtf.l) == 5)][[1]]
+
+foo5 = test5 = GRanges(seqnames = seqnames(test5)[1:length(test5)-1],
+                                  ranges   = IRanges(start = c(start(test5)[which(test5$source == "steinmetz_mTIFs_coio")],
+                                                               sort(start(test5)[which(test5$source == "utr-analysis")])[-1]),
+                                                     end   = c(sort(end(test5)[which(test5$source == "utr-analysis")])[1:length(sort(end(test5)[which(test5$source == "utr-analysis")]))-1],
+                                                               end(test5)[which(test5$source == "steinmetz_mTIFs_coio")])),
+                                  strand   = strand(test5)[1:length(test5)-1],
+                                  mcols    = mcols(test5)[which(test5$source == "utr-analysis"),])
+        names(test5) = mcols(test5)[,5]
+        mcols(test5)$mcols.source = "steinmetz_mTIFS_coio"
+
+
+
+# coio.mtif.filt.rd.gr = makeGRangesFromDataFrame(coio.mtif.filt.df,
+#                                                 keep.extra.columns = TRUE,
+#                                                 ignore.strand = FALSE,
+#                                                 seqnames.field = c("chr"),
+#                                                 start.field = c("start"),
+#                                                 end.field = c("end"),
+#                                                 strand.field = c("strand"))
+# # 
+# # TAKE JUST THE LINES WITH EXON
+# system('grep -w "exon" sac_cer_yassour_utr.gtf > sac_cer_yassour_exon.gtf')
+# # 
+# # READ IN NICK'S GTF
+# library(rtracklayer)
+# gtf = import("sac_cer_yassour_exon.gtf", format = "GFF", asRangedData = FALSE)
+# gtf
+# coio.mtif.filt.rd.gr
+# # chr names are different
+# # gene names are not so accessible
 
 
