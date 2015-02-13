@@ -10,3 +10,5 @@ ribosome-profiling-clone/
 *.gtf
 
 *.bed
+
+*.fasta
