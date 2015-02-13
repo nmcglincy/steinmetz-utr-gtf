@@ -311,8 +311,8 @@ for (i in 1:length(exon.gtf.l)) {
   if (sum(elementLengths(exon.gtf.l[[i]])) == 2) {
     if (length(unique(exon.gtf.l[[i]]$source)) == 2) {
       exon.gtf.l[[i]] = subset(exon.gtf.l[[i]], exon.gtf.l[[i]]$source == "steinmetz_mTIFs_coio")
-    }}}
-    
+      }
+    }
   } else if (sum(elementLengths(exon.gtf.l[[i]])) == 3) {
 	    if (length(unique(exon.gtf.l[[i]]$source)) == 2) {
 	      exon.gtf.l[[i]] = GRanges(seqnames = seqnames(exon.gtf.l[[i]])[1:length(exon.gtf.l[[i]])-1],
@@ -339,6 +339,7 @@ for (i in 1:length(exon.gtf.l)) {
   	}
   }
 }
+
 el.aft = elementLengths(exon.gtf.l)
 table(el.aft)
 
