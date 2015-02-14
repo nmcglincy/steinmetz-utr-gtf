@@ -20,7 +20,7 @@ bedops --partition hybrid.pos.bed \
 	| bedmap --count --echo - hybrid.pos.bed \
 	| awk -F"|" '($1 <2) {print $2}' \
 	| bedmap --skip-unmapped --echo-map-range --echo hybrid.pos.bed - \
-	| awk -F'["|""\t"]' 'BEGIN{OFS="\t"}{print $1,$2,$3,$7,$8,$9,$10,$11,$12,$13}' > hyb-pos-part-simple.bed
+	| awk -F'["|""\t"]' 'BEGIN{OFS="\t"}{print $1,$2,$3,$7,$8,$9,$10,$11,$13}' > hyb-pos-part-simple.bed
 
 # When it got the overlaps it wrote the line from the overlap to file, with the old coordinates...
 
@@ -32,7 +32,7 @@ bedops --partition hybrid.neg.bed \
 	| bedmap --count --echo - hybrid.neg.bed \
 	| awk -F"|" '($1 <2) {print $2}' \
 	| bedmap --skip-unmapped --echo-map-range --echo hybrid.pos.bed - \
-	| awk -F'["|""\t"]' 'BEGIN{OFS="\t"}{print $1,$2,$3,$7,$8,$9,$10,$11,$12,$13}' > hyb-neg-part-simple.bed
+	| awk -F'["|""\t"]' 'BEGIN{OFS="\t"}{print $1,$2,$3,$7,$8,$9,$10,$11,$13}' > hyb-neg-part-simple.bed
 
 bedops --partition hybrid.neg.bed \
 	| bedmap --count --echo-map - hybrid.neg.bed \
