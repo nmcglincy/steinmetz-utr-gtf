@@ -12,3 +12,5 @@ ribosome-profiling-clone/
 *.bed
 
 *.fasta
+
+ambig-mito-genes

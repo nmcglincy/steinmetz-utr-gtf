@@ -142,3 +142,17 @@ head(monkey)
 length(monkey)
 # [1] 7790, well that's bad news
 # banana = findOverlaps(ape.gr, ape.gr) obviously everything overlaps - not very useful
+# 
+library(rtracklayer)
+export(ape.gr,
+       con = "hybrid.gtf",
+       format = "gtf")
+
+
+
+
+
+
+
+
+
