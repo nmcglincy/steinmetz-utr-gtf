@@ -56,7 +56,6 @@ bedops --partition hybrid.neg.bed \
 # putting together the final exon .beds, by strand:
 # 
 # realised that I need to do some reformatting of the complex and mito bed files
-sed 's/chrXVI/chr16/g' hyb-pos-part-complex2.bed
 
 bedops --everything hyb-pos-part-simple.bed \
 	mito-pos-ambig.bed \

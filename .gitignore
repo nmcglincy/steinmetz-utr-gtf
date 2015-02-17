@@ -14,3 +14,5 @@ ribosome-profiling-clone/
 *.fasta
 
 ambig-mito-genes
+
+*.tmp
