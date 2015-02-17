@@ -147,6 +147,27 @@ library(rtracklayer)
 export(ape.gr,
        con = "hybrid.gtf",
        format = "gtf")
+#
+# 
+# I've integrating the exon and CDS records, but I want to correct entries were the CDS is 
+# not a subset of the exon.
+hyb.data = read.table(file = "needs-to-be-fixed.bed",
+                      head = FALSE,
+                      sep = "\t",
+                      stringsAsFactors = FALSE,
+                      col.names = c("chr", "start", "end", "phase", "strand", "analysis", "seq.type", "score", "gene.id"))
+library(plyr); library(dplyr); library(tidyr)
+head(hyb.data)
+# distribution of element lengths
+hyb.data.EL = hyb.data %>%
+  group_by(gene.id) %>%
+  summarise(EL = length(seq.type))
+head(hyb.data.EL)
+table(hyb.data.EL$EL)
+# the numbers here seem way off, maybe I need to go back and figure out where things went wrong...
+
+
+
 
 
 
