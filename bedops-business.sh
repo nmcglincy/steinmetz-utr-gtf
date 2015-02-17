@@ -54,6 +54,10 @@ bedops --partition hybrid.neg.bed \
 # bedmap --skip-unmapped --echo hybrid.pos.bed hyb-pos-part-simple.bed > foo.bed
 # 
 # putting together the final exon .beds, by strand:
+# 
+# realised that I need to do some reformatting of the complex and mito bed files
+sed 's/"chrII"/chr2/g' 
+
 bedops --everything hyb-pos-part-simple.bed \
 	mito-pos-ambig.bed \
 	hyb-pos-part-complex2.bed > mcglincy.exon.pos.bed
