@@ -4,3 +4,6 @@
 sed -e 's/chrXVI/chr16/g' \
 	-e 's/chr//g' \
 	-e 's/chr//g' \
+
+
+say -v Milena "I'm finished" 
