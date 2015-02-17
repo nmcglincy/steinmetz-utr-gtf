@@ -19,5 +19,7 @@ sed -i .tmp -e 's/chrXVI/chr16/g' \
 			-e 's/chrI/chr01/g' \
 			-e 's/chrM/chrmt/g' $1 
 # 
-
+# reformatting gene names
+awk -F'[\t\" ]' 'BEGIN{OFS="\t"}{print $1,$2,$3,$4,$5,$6,$7,$8,$11}' $1 > tmp && mv tmp $1
+# 
 # say -v Milena "Im finished" 
